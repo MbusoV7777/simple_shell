@@ -1,85 +1,39 @@
 #include "shell.h"
 
 /**
- *_eputs - prints an input string
- * @str: the string to be printed
+ * _puts - Prints a string to the standard output stream
+ * @str: The string to print
  *
- * Return: Nothing
+ * Return: Void
  */
-void _eputs(char *str)
+void _puts(char *str)
 {
-	int i = 0;
+	size_t len;
+	ssize_t num_written;
 
-	if (!str)
-		return;
-	while (str[i] != '\0')
+	len = _strlen(str);
+	num_written = write(STDOUT_FILENO, str, len);
+	if (num_written == -1)
 	{
-		_eputchar(str[i]);
-		i++;
+		perror("write");
 	}
 }
 
 /**
- * _eputchar - writes the character c to stderr
- * @c: The character to print
+ * _puterror - Prints an error message to the standard error stream
+ * @err: The error message to print
  *
- * Return: On success 1.
- * On error, -1 is returned, and errno is set appropriately.
+ * Return: Void
  */
-int _eputchar(char c)
+void _puterror(char *err)
 {
-	static int i;
-	static char buf[WRITE_BUF_SIZE];
+	size_t len;
+	ssize_t num_written;
 
-	if (c == BUF_FLUSH || i >= WRITE_BUF_SIZE)
+	len = _strlen(err);
+	num_written = write(STDERR_FILENO, err, len);
+	if (num_written == -1)
 	{
-		write(2, buf, i);
-		i = 0;
+		perror("write");
 	}
-	if (c != BUF_FLUSH)
-		buf[i++] = c;
-	return (1);
-}
-
-/**
- * _putfd - writes the character c to given fd
- * @c: The character to print
- * @fd: The filedescriptor to write to
- *
- * Return: On success 1.
- * On error, -1 is returned, and errno is set appropriately.
- */
-int _putfd(char c, int fd)
-{
-	static int i;
-	static char buf[WRITE_BUF_SIZE];
-
-	if (c == BUF_FLUSH || i >= WRITE_BUF_SIZE)
-	{
-		write(fd, buf, i);
-		i = 0;
-	}
-	if (c != BUF_FLUSH)
-		buf[i++] = c;
-	return (1);
-}
-
-/**
- *_putsfd - prints an input string
- * @str: the string to be printed
- * @fd: the filedescriptor to write to
- *
- * Return: the number of chars put
- */
-int _putsfd(char *str, int fd)
-{
-	int i = 0;
-
-	if (!str)
-		return (0);
-	while (*str)
-	{
-		i += _putfd(*str++, fd);
-	}
-	return (i);
 }
